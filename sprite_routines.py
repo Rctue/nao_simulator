@@ -96,13 +96,13 @@ def clamp(x, xmin, xmax):
 def screen_coordinates(pos):
     """Transforms world coordinates to screen coordinates"""
 
-    return int((pos[0] % screen_width) / px), screen_height - int((pos[1] % screen_height) / px)
+    return [int((pos[0] % screen_width) / px), screen_height - int((pos[1] % screen_height) / px)]
 
 
 def from_screen_coordinates(pos):
     """Transforms screen coordinates to world coordinates"""
 
-    return float(pos[0]) * px, float(screen_height - pos[1]) * px
+    return [float(pos[0]) * px, float(screen_height - pos[1]) * px]
 
 
 def world_coordinates(x, y, robot_x, robot_y, robot_phi):
@@ -207,15 +207,24 @@ class nao_robot(pygame.sprite.Sprite):
                         #         pygame.draw.circle(self.background, BLACK, screen_coordinates(q), 10, 2)
                         detected_points = inter.intersect_poly(p, v, obs.point_list)
                         dist = inter.compute_distance(p, detected_points)
+                    elif isinstance(obs, polygon):
+                        # for q in obs.make_pointlist():
+                        #     if self.draw_detections:
+                        #         pygame.draw.circle(self.background, BLACK, screen_coordinates(q), 10, 2)
+                        detected_points = inter.intersect_poly(p, v, obs.make_pointlist())
+                        dist = inter.compute_distance(p, detected_points)
+                    else:
+                        continue
 
-                        for i in range(len(detected_points)):
-                            if dist[i] < self.max_distance:
-                                s = detected_points[i]
-                                if self.draw_detections:
-                                    pygame.draw.circle(self.background, GREEN, screen_coordinates(s), 10, 2)
-                                    pygame.draw.line(self.background, RED, screen_coordinates(p), screen_coordinates(s))
-                                dist_inrange.append(dist[i])
-        #                        print inter.min_distance(p,detected_points)
+                    for i in range(len(detected_points)):
+                        if dist[i] < self.max_distance:
+                            s = detected_points[i]
+                            if self.draw_detections:
+                                pygame.draw.circle(self.background, GREEN, screen_coordinates(s), 10, 2)
+                                pygame.draw.line(self.background, RED, screen_coordinates(p), screen_coordinates(s))
+                            dist_inrange.append(dist[i])
+    #                        print inter.min_distance(p,detected_points)
+
             if len(dist_inrange)>0:
                 sonar_values[sensor] = np.amin(dist_inrange)
             else:
@@ -347,6 +356,7 @@ class obstacle(pygame.sprite.Sprite):
         self.point_list = [a1, a2, a3, a4]
 
 
+
 class polygon(pygame.sprite.Sprite):
     """moves a monkey critter across the screen. it can spin the
        monkey when it is punched."""
@@ -357,23 +367,28 @@ class polygon(pygame.sprite.Sprite):
         # Create an image of the block, and fill it with a color.
         # This could also be an image loaded from the disk
 
-        self.point_list = point_list
-        self.width, self.height = self.bounding_rect()  # self.point_list needs to be initialised first
-
-        self.image = pygame.Surface([self.width, self.height])
+        width, height = self.init_point_list(point_list)
+        self.image = pygame.Surface( (width, height) )
         self.image.fill(background_color)
         self.image.set_colorkey(background_color)
         self.color = color
-        pygame.draw.polygon(self.image, self.color, point_list, 0)
+        pygame.draw.polygon(self.image, self.color, self.surface_point_list, 0)
         self.rect = self.image.get_rect()
         self.mask = pygame.mask.from_surface(self.image)
 
         self.original = self.image
-        self.set_pos(10, 10, 0)
+        #self.set_pos(10, 10, 0)
 
-    def bounding_rect(self):
-        xmin = xmax = self.point_list[0][0]
-        ymin = ymax = self.point_list[0][1]
+    def init_point_list(self, point_list):
+
+        " Determine center of polygon, make all points positive and compute drawing points"
+
+        self.point_list = point_list
+        self.surface_point_list=[]
+        xcenter = 0.0
+        ycenter = 0.0
+        num_points = len(self.point_list)
+        [xmin, ymin] = [xmax, ymax] = self.point_list[0]
         for p in self.point_list:
             if p[0] < xmin:
                 xmin = p[0]
@@ -383,20 +398,33 @@ class polygon(pygame.sprite.Sprite):
                 ymin = p[1]
             elif p[1] > ymax:
                 ymax = p[1]
-        width = xmax - xmin
-        height = ymax - ymin
-        if xmin < 0:
-            for p in self.point_list:
-                p[0] -= xmin
-        if ymin < 0:
-            for p in self.point_list:
-                p[1] -= ymin
+            xcenter += float(p[0])
+            ycenter += float(p[1])
+
+        self.x = float(xcenter) / num_points
+        self.y = float(ycenter) / num_points
+        self.width = float(xmax -xmin)
+        self.height = float(ymax - ymin)
+        width = int(self.width/px)
+        height = int(self.height/px)
+
+        # shift origin of point_list to center
+        for i in range(len(self.point_list)):
+            self.point_list[i][0] -= self.x
+            self.point_list[i][1] -= self.y
+
+        # compute sceencoordinates relative to top left of surface
+        for i in range(len(self.point_list)):
+            self.surface_point_list.append( [int((self.point_list[i][0] + self.width / 2 )/px),
+                                             int((-self.point_list[i][1] + self.height / 2)/px)])
 
         return width, height
 
     def update(self):
         "obstacles stay in one place."
-        pass
+        self.phi+=5*degree
+        self.phi = clamp(self.phi, -math.pi, math.pi)
+        self.update_rect()
 
     def set_pos(self, x, y, phi, absolute=True):
         self.x = x
@@ -417,5 +445,67 @@ class polygon(pygame.sprite.Sprite):
         self.image = rotate(self.original, self.phi / degree)
         self.rect = self.image.get_rect(center=self.rect.center)
         self.mask = pygame.mask.from_surface(self.image)
+
+
+    def make_pointlist(self):
+        rotation = np.array([[math.cos(self.phi), -math.sin(self.phi)],
+                             [math.sin(self.phi), math.cos(self.phi)]])
+        rotated_list = []
+        for p in self.point_list:
+            rotated_list.append(np.array([self.x, self.y]) + rotation.dot(p))
+
+        return rotated_list
+
+
+class person(pygame.sprite.Sprite):
+    """sprite of a person with certain position and orientation"""
+
+    def __init__(self, x=40, y=30, phi=0.0):
+        pygame.sprite.Sprite.__init__(self)  # call Sprite initializer
+        self.image, self.rect = load_image('person.png', -1)
+        self.rect = self.image.get_rect(center=self.rect.center)
+        self.mask = pygame.mask.from_surface(self.image)
+
+        self.velocity = 0.0
+        self.turnrate = 0.0
+        self.original = self.image
+        self.set_pos(x, y, phi) #default position
+        self.timestep = 0.05  # 50ms
+
+    def update(self):
+        "move the robot to the desired position"
+        self.x += self.velocity * math.cos(self.phi) * self.timestep
+        self.y += self.velocity * math.sin(self.phi) * self.timestep  # larger y-value is down in image
+        self.phi += self.turnrate * self.timestep
+        self.phi = clamp(self.phi, -math.pi, math.pi)
+
+        #        print self.x, self.y, self.phi*180/math.pi
+        self.update_rect()
+
+    def update_rect(self):
+        # update the image position and orientation
+        [x, y] = screen_coordinates([self.x, self.y])
+        self.rect.center = [x, y]
+        rotate = pygame.transform.rotate
+        self.image = rotate(self.original, self.phi / degree)
+        self.rect = self.image.get_rect(center=self.rect.center)
+        self.mask = pygame.mask.from_surface(self.image)
         pass
 
+    def set_pos(self, x, y, phi, absolute=True):
+        self.x = float(x)
+        self.y = float(y)
+        if absolute:
+            self.phi = float(phi)
+        else:
+            self.phi += float(phi)
+
+        self.phi = clamp(self.phi, -math.pi, math.pi)
+        self.update_rect()
+        pass
+
+    def set_vel(self, vel, turnrate):
+        max_vel = 100.0
+        max_turn = 10.0
+        self.velocity = clamp(vel, -max_vel / 2, max_vel)
+        self.turnrate = clamp(turnrate, -max_turn, max_turn)

@@ -26,7 +26,7 @@ def FStochastic():
     Fstoch =Kstoch*random.randint(1,100)/100.0
     return Fstoch
 
-def FOrienting():
+def FAlign():
     #do something useful here
     Forient=0
     return Forient
@@ -61,17 +61,11 @@ def compute_turnrate(target_dist, target_angle, sonar_distance_left, sonar_dista
     FTotal = FTarget(target_dist, target_angle) + \
              Fobs_left + \
              Fobs_right + \
-             FOrienting() + \
+             FAlign() + \
              FStochastic()
              
     # turnrate: d phi(t) / dt = sum( forces ) 
     turnrate =  FTotal*delta_t
-    
-    #normalise turnrate value
-    if turnrate>max_turnrate:
-        turnrate=1.0
-    else:
-        turnrate=turnrate/max_turnrate
 
     return turnrate
 

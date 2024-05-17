@@ -1,4 +1,4 @@
-import os, math
+import os, math, time
 
 # globals
 main_dir = os.path.split(os.path.abspath(__file__))[0]
@@ -17,6 +17,9 @@ YELLOW = (255,255, 0)
 MAGENTA = (255, 0, 255)
 CYAN = (0, 255, 255)
 WHITE = (255, 255, 255)
+
+data_robot=[]
+startup_time = time.time()
 
 screen_width = 1920
 screen_height = 1080

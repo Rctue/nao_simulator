@@ -25,5 +25,9 @@ def scan_world(robot, allobstacles, alltargets):
 
     turn_rate = bn.compute_turnrate(target_distance, target_angle_robot, sonar_left, sonar_right)
     velocity = bn.compute_velocity(sonar_left, sonar_right)
+
+    timestamp = time.time() - startup_time #from definitions
+    
+    data_robot.append([timestamp, sonar_left, sonar_right, target_distance, target_angle, target_angle_robot, velocity, turn_rate])
     robot.set_vel(velocity, turn_rate)  # the simulated robot does not sidestep
 

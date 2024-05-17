@@ -6,10 +6,11 @@ Note there are comments here, but for the full explanation,
 follow along in the tutorial.
 """
 
+import my_navigation_code as nav
+import sprite_routines as sp
 # Import Modules
 from definitions import *
-import sprite_routines as sp
-import my_navigation_code as nav
+import matplotlib.pyplot as plt
 
 
 def create_world(background):
@@ -180,9 +181,22 @@ def mainloop():
 
 
 # Game Over
+def show_data():
+    t = [x[0] for x in data_robot]
+    y1 = [x[1] for x in data_robot]
+    y2 = [x[2] for x in data_robot]
+    print t
+    plt.plot(t, y1, 'r-', t, y2, 'b-')
+    plt.xlabel('time (s)')
+    plt.ylabel('sonar data (m)')
+    plt.legend(['left', 'right'])
+    plt.show()
+
 
 
 # this calls the 'mainloop' function when this script is executed
 if __name__ == '__main__':
     show_menu()
     mainloop()
+    show_data()
+

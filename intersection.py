@@ -84,8 +84,8 @@ if __name__=="__main__":
     p=[0.0,0.0]
     v=[1.5,1]
     
-    print footpoint(p,[a,b])
-    print intersection(p,v,[a,b])
+    print(footpoint(p,[a,b]))
+    print(intersection(p,v,[a,b]))
     
     my_list = [a,b,c,d]
     
@@ -94,11 +94,11 @@ if __name__=="__main__":
         q1=my_list[i]
         q2=my_list[(i+1)%n]
         s, lam, mu = intersection(p,v,[q1,q2])
-        print s, lam , mu, 0<=mu<=1
+        print(s, lam , mu, 0<=mu<=1)
         
     result=intersect_poly(p, v, my_list)
-    print result
+    print(result)
     
-    print min_distance(p, result)
+    print(min_distance(p, result))
         
         

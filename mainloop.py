@@ -46,14 +46,14 @@ def detect_collisions(robot, allobstacles, allsounds, sound_played):
     if obstacle_hit:
         for g in obstacle_hit:
             if isinstance(g, sp.obstacle):
-                print "you hit the wall"
+                print("you hit the wall")
                 robot.set_vel(0, 0)
                 if not sound_played:
                     allsounds['punch'].play()
                     sound_played = True
                 break
             elif isinstance(g, sp.polygon):
-                print "you stepped on an area"
+                print("you stepped on an area")
                 robot.set_vel(0, 1)
                 if not sound_played:
                     allsounds['whiff'].play()
@@ -69,7 +69,7 @@ def detect_target_reached(nao1, alltargets, allsounds):
 
     target_hit = sp.pygame.sprite.spritecollide(nao1, alltargets, False, sp.pygame.sprite.collide_mask)
     if target_hit:
-        print "you reached the target! Hurray!"
+        print("you reached the target! Hurray!")
         nao1.set_vel(0, 0)
         allsounds['whiff'].play()
 
@@ -78,16 +78,16 @@ def detect_target_reached(nao1, alltargets, allsounds):
 
 def show_menu():
 
-    print "Menu:"
-    print "ESC   exit game"
-    print "UP    speed up robot"
-    print "DOWN  slow down robot"
-    print "LEFT  increase turnrate"
-    print "RIGHT decrease turnrate"
-    print "SPACE stop robot"
-    print "a     toggle autonomous navigation"
-    print "c     toggle collision detection"
-    print "d     toggle draw sonar detections (in autonomous mode)"
+    print("Menu:")
+    print("ESC   exit game")
+    print("UP    speed up robot")
+    print("DOWN  slow down robot")
+    print("LEFT  increase turnrate")
+    print("RIGHT decrease turnrate")
+    print("SPACE stop robot")
+    print("a     toggle autonomous navigation")
+    print("c     toggle collision detection")
+    print("d     toggle draw sonar detections (in autonomous mode)")
 
 def mainloop():
     """this function is called when the program starts.
@@ -129,21 +129,21 @@ def mainloop():
                 elif event.key == sp.K_a:
                     autonomous = not autonomous
                     if autonomous:
-                        print "Autonomous mode active"
+                        print("Autonomous mode active")
                     else:
-                        print "Autonomous mode turned off"
+                        print("Autonomous mode turned off")
                 elif event.key == sp.K_d:
                     nao1.draw_detections = not nao1.draw_detections
                     if nao1.draw_detections:
-                        print "Drawing detections is active"
+                        print("Drawing detections is active")
                     else:
-                        print "Drawing detections is turned off"
+                        print("Drawing detections is turned off")
                 elif event.key == sp.K_c:
                     collision_detection = not collision_detection
                     if collision_detection:
-                        print "Collision detection is active"
+                        print("Collision detection is active")
                     else:
-                        print "Collision detection is turned off"
+                        print("Collision detection is turned off")
                 else:
                     show_menu()
                     pass
@@ -187,7 +187,7 @@ def show_data():
     t = [x[0] for x in data_robot]
     y1 = [x[1] for x in data_robot]
     y2 = [x[2] for x in data_robot]
-    print t
+    print(t)
     plt.plot(t, y1, 'r-', t, y2, 'b-')
     plt.xlabel('time (s)')
     plt.ylabel('sonar data (m)')
@@ -200,5 +200,5 @@ def show_data():
 if __name__ == '__main__':
     show_menu()
     mainloop()
-    #show_data()
-
+    show_data()
+    

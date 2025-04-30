@@ -1,6 +1,6 @@
 import pygame
 from pygame.locals import *
-from pygame.compat import geterror
+#from pygame.compat import geterror
 
 import numpy as np
 import intersection as inter
@@ -57,7 +57,7 @@ def load_image(name, colorkey=None):
         raise SystemExit(str(geterror()))
     image = image.convert()
     if colorkey is not None:
-        if colorkey is -1:
+        if colorkey == -1:
             colorkey = image.get_at((0, 0))
         image.set_colorkey(colorkey, RLEACCEL)
     return image, image.get_rect()
@@ -190,14 +190,14 @@ class nao_robot(pygame.sprite.Sprite):
 
         scan_resolution = 10
         n=len(self.sensor_positions)
+        m=int(self.view_angle/scan_resolution)
         sonar_values=np.zeros(n)
         for sensor in range(n):
             p = [self.x + self.sensor_positions[sensor][0] * math.cos(self.sensor_positions[sensor][1] + self.phi),
                  self.y + self.sensor_positions[sensor][0] * math.sin(self.sensor_positions[sensor][1] + self.phi)]
             dist_inrange=[]
-            for scan_direction in range(-self.view_angle / 2 + self.view_directions[sensor],
-                                        self.view_angle / 2 + self.view_directions[sensor] + scan_resolution,
-                                        scan_resolution):
+            for i_direction in range(m+1):
+                scan_direction = -self.view_angle / 2.0 + self.view_directions[sensor] + i_direction*scan_resolution
                 v = [10 * math.cos(self.phi + scan_direction * degree),
                      10 * math.sin(self.phi + scan_direction * degree)]
                 for obs in obstacles:

@@ -20,10 +20,9 @@ def FObstacle(obs_distance, obs_angle):
     return Fobs
 
 def FStochastic():
-    """FStochastic adds noise to the turnrate force. This is just to make the simulation more realistic by adding some noie something useful here"""
-    Kstoch=0.03
+    """FStochastic adds noise to the turnrate force. This is just to make the simulation more realistic."""
     
-    Fstoch =Kstoch*random.randint(1,100)/100.0
+    Fstoch =0
     return Fstoch
 
 def FAlign():

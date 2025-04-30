@@ -46,16 +46,16 @@ def detect_collisions(robot, allobstacles, allsounds, sound_played):
     if obstacle_hit:
         for g in obstacle_hit:
             if isinstance(g, sp.obstacle):
-                print("you hit the wall")
                 robot.set_vel(0, 0)
                 if not sound_played:
+                    print("You hit the wall")
                     allsounds['punch'].play()
                     sound_played = True
                 break
             elif isinstance(g, sp.polygon):
-                print("you stepped on an area")
                 robot.set_vel(0, 1)
                 if not sound_played:
+                    print("You stepped on an area")
                     allsounds['whiff'].play()
                     sound_played = True
                 break
@@ -124,7 +124,9 @@ def mainloop():
                 elif event.key == sp.K_RIGHT:
                     nao1.turnrate -= 0.1
                 elif event.key == sp.K_SPACE:
-                    autonomous = False
+                    if autonomous:
+                        print("Autonomous mode turned off")
+                        autonomous = False
                     nao1.set_vel(0, 0)
                 elif event.key == sp.K_a:
                     autonomous = not autonomous
@@ -187,7 +189,7 @@ def show_data():
     t = [x[0] for x in data_robot]
     y1 = [x[1] for x in data_robot]
     y2 = [x[2] for x in data_robot]
-    print(t)
+    #print(t)
     plt.plot(t, y1, 'r-', t, y2, 'b-')
     plt.xlabel('time (s)')
     plt.ylabel('sonar data (m)')
@@ -200,5 +202,5 @@ def show_data():
 if __name__ == '__main__':
     show_menu()
     mainloop()
-    show_data()
+    #show_data()
     

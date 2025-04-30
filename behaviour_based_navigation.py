@@ -16,7 +16,8 @@ degree = math.pi / 180.0  # radians per degree
 #Parameters for dynamical systems
 Q = 0.0001 # stocastic component
 
-
+def cmp(a, b): # python 3 implementation of python2 function
+    return (a > b) - (a < b)
 
 
 def FTarget(target_distance, target_angle):
@@ -78,7 +79,7 @@ def check_collision(SonarLeft, SonarRight, dtheta, Fstoch, SonarCusum):
     #print " dtheta" , dtheta
     if (math.fabs(SonarLeft-SonarRight)<10*cm and SonarLeft<40*cm and SonarRight<40*cm):
         SonarCusum=SonarCusum+10
-        Fstoch= cmp(dtheta,0)*SonarCusum*Fstoch
+        Fstoch= cmp(dtheta,0)*SonarCusum*Fstoch #probably easier to use np.sign()?
     else:
                 # was used to switch between aligning and approaching # SonarFlag=0
         SonarCusum=60

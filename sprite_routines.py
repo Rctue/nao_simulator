@@ -1,6 +1,5 @@
 import pygame
 from pygame.locals import *
-#from pygame.compat import geterror
 
 import numpy as np
 import intersection as inter
@@ -54,7 +53,7 @@ def load_image(name, colorkey=None):
         image = pygame.image.load(fullname)
     except pygame.error:
         print ('Cannot load image:', fullname)
-        raise SystemExit(str(geterror()))
+        raise SystemExit(str(pygame.get_error()))
     image = image.convert()
     if colorkey is not None:
         if colorkey == -1:
@@ -74,7 +73,7 @@ def load_sound(name):
         sound = pygame.mixer.Sound(fullname)
     except pygame.error:
         print ('Cannot load sound: %s' % fullname)
-        raise SystemExit(str(geterror()))
+        raise SystemExit(str(pygame.get_error()))
     return sound
 
 

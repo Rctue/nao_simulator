@@ -26,9 +26,11 @@ def create_world(background):
 
     polygon1 = sp.polygon([[0, 0], [4, 0], [6, 6], [2, 8], [-2, 6]], (250, 250, 0))  # cm
     polygon1.set_pos(20, 20, 0)  # cm
-    # allsprites = pygame.sprite.Group((target1,nao1))
-    alltargets = sp.pygame.sprite.Group((target1,person1))
-    allobstacles = sp.pygame.sprite.Group((wall1, wall2, wall3, wall4,polygon1))
+    
+    alltargets = sp.pygame.sprite.Group((target1,))
+    allobstacles = sp.pygame.sprite.Group((wall1, wall2, wall3, wall4,))
+    # alltargets = sp.pygame.sprite.Group((target1,person1))
+    # allobstacles = sp.pygame.sprite.Group((wall1, wall2, wall3, wall4,polygon1))
     allrobots = sp.pygame.sprite.Group((nao1,))
 
     whiff_sound = sp.load_sound('whiff.wav')
@@ -198,5 +200,5 @@ def show_data():
 if __name__ == '__main__':
     show_menu()
     mainloop()
-    show_data()
+    #show_data()
 

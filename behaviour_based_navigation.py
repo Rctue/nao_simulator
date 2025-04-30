@@ -127,11 +127,12 @@ def compute_turnrate(target_dist, target_angle, sonar_distance_left, sonar_dista
     turnrate = FTotal * delta_t
 
     # normalise turnrate value
+    turnrate = turnrate / max_turnrate
     if turnrate > max_turnrate:
         turnrate = 1.0
-    else:
-        turnrate = turnrate / max_turnrate
-
+    elif turnrate < -max_turnrate:
+        turnrate = -1.0
+        
     return turnrate
 
     # maxdtheta=0.8 #0.68

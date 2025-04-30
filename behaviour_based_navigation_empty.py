@@ -1,5 +1,5 @@
 import math
-import random
+import numpy as np
 
 degree = math.pi/180.0 # radians per degree
 
@@ -23,7 +23,7 @@ def FStochastic():
     """FStochastic adds noise to the turnrate force. This is just to make the simulation more realistic by adding some noie something useful here"""
     Kstoch=0.03
     
-    Fstoch =Kstoch*random.randint(1,100)/100.0
+    Fstoch = np.random.normal(0,Kstoch)
     return Fstoch
 
 def FAlign():

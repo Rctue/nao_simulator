@@ -186,7 +186,7 @@ class nao_robot(pygame.sprite.Sprite):
         self.turnrate = clamp(turnrate, -max_turn, max_turn)
 
     def sonar(self, obstacles):
-
+        scan_range = 10  # m
         scan_resolution = 10
         n=len(self.sensor_positions)
         m=int(self.view_angle/scan_resolution)
@@ -197,8 +197,8 @@ class nao_robot(pygame.sprite.Sprite):
             dist_inrange=[]
             for i_direction in range(m+1):
                 scan_direction = -self.view_angle / 2.0 + self.view_directions[sensor] + i_direction*scan_resolution
-                v = [10 * math.cos(self.phi + scan_direction * degree),
-                     10 * math.sin(self.phi + scan_direction * degree)]
+                v = [scan_range * math.cos(self.phi + scan_direction * degree),
+                     scan_range * math.sin(self.phi + scan_direction * degree)]
                 for obs in obstacles:
                     if isinstance(obs, obstacle):
                         # for q in obs.point_list:

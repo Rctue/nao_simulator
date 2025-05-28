@@ -20,10 +20,12 @@ def FObstacle(obs_distance, obs_angle):
     return Fobs
 
 def FStochastic():
-    """FStochastic adds noise to the turnrate force. This is just to make the simulation more realistic."""
+    """FStochastic adds noise to the turnrate force. This is just to make the simulation more realistic by adding some noie something useful here"""
+
+    # do something useful here
     Kstoch=0.03
-    
     Fstoch = np.random.normal(0,Kstoch)
+
     return Fstoch
 
 def FAlign():
@@ -33,14 +35,15 @@ def FAlign():
 
 def compute_velocity(sonar_distance_left, sonar_distance_right):
     max_velocity = 1.0
-    max_distance = 0.5 #m
-    min_distance = 0.2 #m
+    max_distance = 10.0  #m  # the real sonar has a range of about 2.5m
+    min_distance = 0.2  #m
 
-    if sonar_distance_left>max_distance and sonar_distance_right > max_distance:
+    # this code probably needs revision!
+    if sonar_distance_left > max_distance and sonar_distance_right > max_distance:
         velocity = max_velocity
-    elif sonar_distance_left<min_distance or sonar_distance_right < min_distance:
+    elif sonar_distance_left < min_distance or sonar_distance_right < min_distance:
         velocity = 0.0
-    elif sonar_distance_left<sonar_distance_right:
+    elif sonar_distance_left < sonar_distance_right:
         velocity = max_velocity*sonar_distance_left/max_distance
     else:
         velocity = max_velocity*sonar_distance_right/max_distance
